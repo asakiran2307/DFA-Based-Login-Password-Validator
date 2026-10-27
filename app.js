@@ -112,7 +112,7 @@
     const password = elements.input.value;
     const result = buildTrace(password);
     const checks = {
-      length: password.length >= MIN_LENGTH,
+      length: Array.from(password).length >= MIN_LENGTH,
       lower: Boolean(result.mask & bits.lower),
       upper: Boolean(result.mask & bits.upper),
       digit: Boolean(result.mask & bits.digit),
@@ -123,7 +123,7 @@
     elements.requirementsCount.textContent = `${passedCount} / 5`;
     elements.stateCode.textContent = stateName(result.length, result.mask);
     elements.resultState.textContent = stateName(result.length, result.mask);
-    elements.inputLength.innerHTML = `${result.length} <small>/ 8+${password.length > MIN_LENGTH ? "" : ""}</small>`;
+    elements.inputLength.innerHTML = `${result.length} <small>/ 8+</small>`;
     elements.classMask.textContent = result.mask.toString(2).padStart(4, "0");
     elements.transitionCount.textContent = String(result.trace.length);
     updateBits(result.mask);
