@@ -1,0 +1,167 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#0b1020">
+  <meta name="description" content="An interactive DFA-based password validator that visualizes automata states and transitions.">
+  <title>DFA Lab — Password Validator</title>
+  <link rel="stylesheet" href="./styles.css">
+  <script src="./app.js" defer></script>
+</head>
+<body>
+  <div class="ambient ambient-one" aria-hidden="true"></div>
+  <div class="ambient ambient-two" aria-hidden="true"></div>
+  <header class="topbar">
+    <a class="brand" href="./" aria-label="DFA Lab home">
+      <span class="brand-mark">δ</span>
+      <span>DFA<span class="brand-light"> LAB</span></span>
+    </a>
+    <div class="topbar-tag"><span class="status-dot"></span> THEORY OF COMPUTATION</div>
+  </header>
+
+  <main class="page-shell">
+    <section class="hero">
+      <div class="eyebrow"><span class="eyebrow-line"></span> INTERACTIVE AUTOMATA SIMULATOR</div>
+      <h1>Every character<br>changes the <span>state.</span></h1>
+      <p class="hero-copy">Explore how a Deterministic Finite Automaton reads a password, tracks its character classes, and decides whether the input belongs to the accepted language.</p>
+      <div class="hero-meta">
+        <span><b class="meta-symbol">Σ</b> Character alphabet</span>
+        <span><b class="meta-symbol">δ</b> Transition function</span>
+        <span><b class="meta-symbol">F</b> Accepting states</span>
+      </div>
+    </section>
+
+    <section class="workspace" aria-label="Password validator">
+      <div class="panel input-panel">
+        <div class="panel-heading">
+          <div>
+            <div class="section-kicker">01 / INPUT</div>
+            <h2>Test a password</h2>
+          </div>
+          <span class="live-pill"><span></span> LIVE DFA</span>
+        </div>
+        <label for="passwordInput" class="field-label">YOUR INPUT STRING</label>
+        <div class="password-field">
+          <input id="passwordInput" type="password" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="Enter a sample password" aria-describedby="privacyNote">
+          <button id="toggleVisibility" class="visibility-button" type="button" aria-label="Show password" aria-pressed="false">SHOW</button>
+        </div>
+        <p id="privacyNote" class="privacy-note"><span class="lock-icon">⌑</span> Runs locally in your browser. Nothing is uploaded.</p>
+
+        <div class="requirements-heading"><span>ACCEPTANCE CONDITIONS</span><span id="requirementsCount">0 / 5</span></div>
+        <div class="requirements" id="requirements">
+          <div class="requirement" data-rule="length"><span class="check-icon">○</span><span>At least 8 characters</span><span class="rule-code">LEN ≥ 8</span></div>
+          <div class="requirement" data-rule="lower"><span class="check-icon">○</span><span>Lowercase letter</span><span class="rule-code">a–z</span></div>
+          <div class="requirement" data-rule="upper"><span class="check-icon">○</span><span>Uppercase letter</span><span class="rule-code">A–Z</span></div>
+          <div class="requirement" data-rule="digit"><span class="check-icon">○</span><span>Number</span><span class="rule-code">0–9</span></div>
+          <div class="requirement" data-rule="special"><span class="check-icon">○</span><span>Special character</span><span class="rule-code">!@#$…</span></div>
+        </div>
+
+        <div class="result-box" id="resultBox" aria-live="polite">
+          <div class="result-icon" id="resultIcon">δ</div>
+          <div class="result-copy">
+            <strong id="resultTitle">Waiting for input</strong>
+            <span id="resultMessage">Type a password to start the state machine.</span>
+          </div>
+          <span class="result-state" id="resultState">q(0,0000)</span>
+        </div>
+        <button id="resetButton" class="reset-button" type="button"><span>↺</span> Reset simulator</button>
+      </div>
+
+      <div class="panel machine-panel">
+        <div class="panel-heading">
+          <div>
+            <div class="section-kicker">02 / AUTOMATON</div>
+            <h2>State machine</h2>
+          </div>
+          <span class="machine-badge">DFA</span>
+        </div>
+        <p class="panel-description">The machine remembers the input length (capped at 8) and which of the four character classes have appeared.</p>
+        <div class="state-legend">
+          <span><i class="legend-dot current-dot"></i> Current state</span>
+          <span><i class="legend-dot accept-dot"></i> Accepting state</span>
+        </div>
+        <div class="machine-visual" id="machineVisual">
+          <svg class="state-svg" viewBox="0 0 540 270" role="img" aria-labelledby="dfaTitle dfaDescription">
+            <title id="dfaTitle">Conceptual DFA state transition diagram</title>
+            <desc id="dfaDescription">The start state transitions through intermediate states as characters are read. The accepting state is reached when all requirements are met.</desc>
+            <defs>
+              <marker id="arrow" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#8290b5"></path></marker>
+              <linearGradient id="nodeFill" x1="0" x2="1" y1="0" y2="1"><stop offset="0" stop-color="#192442"></stop><stop offset="1" stop-color="#10182d"></stop></linearGradient>
+            </defs>
+            <path class="edge" d="M28 127 L76 127" marker-end="url(#arrow)"></path>
+            <text class="edge-label" x="47" y="112">start</text>
+            <path class="edge" d="M139 127 C165 75 199 75 224 127" marker-end="url(#arrow)"></path>
+            <text class="edge-label" x="182" y="76">read char</text>
+            <path class="edge" d="M287 127 C314 177 347 177 371 127" marker-end="url(#arrow)"></path>
+            <text class="edge-label" x="330" y="194">update mask</text>
+            <path class="edge" d="M432 127 L476 127" marker-end="url(#arrow)"></path>
+            <text class="edge-label" x="454" y="112">all met</text>
+            <path class="edge edge-loop" d="M493 94 C527 51 450 43 478 89" marker-end="url(#arrow)"></path>
+            <circle class="state-node" cx="108" cy="127" r="31"></circle>
+            <text class="node-label" x="108" y="123">q₀</text><text class="node-sub" x="108" y="140">START</text>
+            <circle class="state-node" cx="255" cy="127" r="31"></circle>
+            <text class="node-label" x="255" y="123">qᵢ</text><text class="node-sub" x="255" y="140">READ</text>
+            <circle class="state-node" cx="402" cy="127" r="31"></circle>
+            <text class="node-label" x="402" y="123">qⱼ</text><text class="node-sub" x="402" y="140">TRACK</text>
+            <circle class="state-node accepting-node" cx="505" cy="127" r="31"></circle>
+            <circle class="accept-ring" cx="505" cy="127" r="25"></circle>
+            <text class="node-label" x="505" y="123">qₐ</text><text class="node-sub" x="505" y="140">ACCEPT</text>
+            <text class="diagram-note" x="270" y="245" text-anchor="middle">Illustration of the transition process · live state shown below</text>
+          </svg>
+        </div>
+        <div class="current-state-card">
+          <div class="state-card-label">LIVE STATE</div>
+          <div class="state-card-main"><span id="stateCode">q(0,0000)</span><span id="stateStatus" class="state-status">INITIAL</span></div>
+          <div class="state-bits" aria-label="Character class bitmask">
+            <span data-bit="lower">a-z <b>0</b></span><span data-bit="upper">A-Z <b>0</b></span><span data-bit="digit">0-9 <b>0</b></span><span data-bit="special">!#? <b>0</b></span>
+          </div>
+        </div>
+        <div class="transition-summary">
+          <div><span>INPUT LENGTH</span><strong id="inputLength">0 <small>/ 8+</small></strong></div>
+          <div><span>CLASS MASK</span><strong id="classMask">0000</strong></div>
+          <div><span>TRANSITIONS</span><strong id="transitionCount">0</strong></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="panel trace-panel">
+      <div class="panel-heading trace-heading">
+        <div><div class="section-kicker">03 / EXECUTION TRACE</div><h2>Transition log</h2></div>
+        <span id="traceCount" class="trace-count">0 transitions</span>
+      </div>
+      <p class="panel-description">Each row shows how one input character moves the DFA to its next state.</p>
+      <div class="trace-table-wrap">
+        <table class="trace-table">
+          <thead><tr><th>STEP</th><th>INPUT</th><th>CLASS</th><th>STATE BEFORE</th><th>STATE AFTER</th></tr></thead>
+          <tbody id="traceBody"><tr class="empty-row"><td colspan="5">Your transition log will appear here when you type.</td></tr></tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="theory-grid">
+      <article class="theory-card">
+        <div class="theory-symbol">Q</div><div class="section-kicker">FINITE STATES</div>
+        <h3>State representation</h3>
+        <p>Each state combines a length counter capped at 8 with a four-bit mask. The mask records whether lowercase, uppercase, digits, and special characters have appeared.</p>
+      </article>
+      <article class="theory-card">
+        <div class="theory-symbol">δ</div><div class="section-kicker">TRANSITION FUNCTION</div>
+        <h3>Deterministic movement</h3>
+        <p>For every character, the machine follows one defined transition: increase the capped length and add the character's class bit to the mask. The same state and input always produce the same next state.</p>
+      </article>
+      <article class="theory-card">
+        <div class="theory-symbol">F</div><div class="section-kicker">ACCEPTING CONDITION</div>
+        <h3>Reach the final state</h3>
+        <p>The input is accepted when the length counter reaches 8 and the mask is <code>1111</code>. Otherwise, the final state is non-accepting.</p>
+      </article>
+    </section>
+
+    <footer class="footer">
+      <div class="brand footer-brand"><span class="brand-mark">δ</span><span>DFA<span class="brand-light"> LAB</span></span></div>
+      <p>Built to make automata theory visible.</p>
+      <span class="footer-note">EDUCATIONAL DEMO · NO DATA SENT</span>
+    </footer>
+  </main>
+</body>
+</html>
